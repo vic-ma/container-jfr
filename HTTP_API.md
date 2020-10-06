@@ -641,7 +641,7 @@
     100  530k    0  530k    0     0  9303k      0 --:--:-- --:--:-- --:--:-- 9303k
     ```
 
-* ### `TargetRecordingsOptionsGetHandler`
+* ### `TargetRecordingOptionsGetHandler`
 
     ###### synopsis
     Returns the default recording options of a target JVM.
@@ -671,11 +671,11 @@
     ###### example
     ```
     $ curl localhost:8181/api/v1/targets/localhost/recordingOptions
-    {"maxAge":"0","toDisk":"false","maxSize":"0"}
+    {"maxAge":0,"toDisk":false,"maxSize":0}
     ```
 
 
-* ### `TargetRecordingsOptionsPatchHandler`
+* ### `TargetRecordingOptionsPatchHandler`
 
     ###### synopsis
     Sets the default recording options of a target JVM.
@@ -722,7 +722,7 @@
     ###### example
     ```
     $ curl -X PATCH --data "toDisk=true&maxAge=0" localhost:8181/api/v1/targets/localhost/recordingOptions
-    {"maxAge":"0","toDisk":"true","maxSize":"0"}
+    {"maxAge":0,"toDisk":true,"maxSize":0}
     ```
 
 
@@ -1168,4 +1168,59 @@
     ###### example
     ```
     $ curl --form "template=@Foo.jfc" localhost:8181/api/v1/templates
+    ```
+
+## V2 API
+
+### Quick Reference
+
+| What you want to do                                                       | Which handler you should use                                                |
+| ------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| **Recordings in target JVMs**                                             |                                                                             |
+| Create a snapshot recording in a target JVM                               | [`TargetSnapshotPostHandler`](#TargetSnapshotPostHandler-2)                   |
+
+### Flight Recorder
+
+* #### `TargetSnapshotPostHandler`
+
+    ###### synopsis
+    Creates a recording named `snapshot-n`, where `n` is a sequentially
+    assigned ID, which contains information about all events recorded
+    across all active recordings at the time of invocation.
+
+    ###### request
+    `POST /api/v2/targets/:targetId/snapshot`
+
+    `targetId` - The location of the target JVM to connect to,
+    in the form of a `service:rmi:jmx://` JMX Service URL, or `hostname:port`.
+    Should use percent-encoding.
+
+    ###### response
+
+    `headers`
+
+    `Location` - will be set to the URL where the newly created snapshot recording
+    can be retrieved.
+
+    `statuses`
+
+    `200` - The body is a descriptor of the newly started recording, in the form
+    `{"downloadUrl":"$DOWNLOAD_URL","reportUrl":"$REPORT_URL","id":$ID,"name":"$NAME","state":"$STATE","startTime":$START_TIME,"duration":$DURATION,"continuous":$CONTINUOUS,"toDisk":$TO_DISK,"maxSize":$MAX_SIZE,"maxAge":$MAX_AGE}`.
+
+    `401` - User authentication failed. The body is an error message.
+    There will be an `X-WWW-Authenticate: $SCHEME` header that indicates
+    the authentication scheme that is used.
+
+    `404` - The target could not be found. The body is an error message.
+
+    `427` - JMX authentication failed. The body is an error message.
+    There will be an `X-JMX-Authenticate: $SCHEME` header that indicates
+    the authentication scheme that is used.
+
+    `500` - There was an unexpected error. The body is an error message.
+
+    ###### example
+    ```
+    $ curl -X POST localhost:8181/api/v2/targets/localhost/snapshot
+    snapshot-2
     ```
