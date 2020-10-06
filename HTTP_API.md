@@ -1177,7 +1177,7 @@
 | What you want to do                                                       | Which handler you should use                                                |
 | ------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
 | **Recordings in target JVMs**                                             |                                                                             |
-| Create a snapshot recording in a target JVM                               | [`TargetSnapshotPostHandler`](#TargetSnapshotPostHandler-2)                   |
+| Create a snapshot recording in a target JVM                               | [`TargetSnapshotPostHandler`](#TargetSnapshotPostHandler-1)                   |
 
 ### Flight Recorder
 
